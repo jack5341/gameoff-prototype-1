@@ -47,7 +47,7 @@ height = 0.003
 material = SubResource("StandardMaterial3D_xxcka")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Plate"]
-transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, 0, 0, 0)
+transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 0.019511923, 0)
 
 [node name="Light" type="SpotLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0.15453815, 0)

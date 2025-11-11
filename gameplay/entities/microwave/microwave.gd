@@ -47,6 +47,7 @@ func _on_request_raw_food_cook(raw: RawFood) -> void:
 	what_is_inside = raw
 	in_plate_raw_food.mesh = what_is_inside.mesh
 	in_plate_raw_food.scale = what_is_inside.mesh_scale
+	in_plate_raw_food.position = what_is_inside.mesh_position
 	started = true
 	temperature = raw.raw_temprature
 	if timer:
@@ -54,28 +55,21 @@ func _on_request_raw_food_cook(raw: RawFood) -> void:
 
 func _on_timer_timeout() -> void:
 	started = false
-	if what_is_inside != null and what_is_inside.food != null:
-		_show_result_mesh(what_is_inside.food)
-		Global.score += 1
-		Signalbus.score_changed.emit(Global.score)
-		Signalbus.food_cooked.emit(what_is_inside.food)
-	# Clear the microwave
-	if is_instance_valid(in_plate_raw_food):
-		in_plate_raw_food.mesh = null
+	if what_is_inside != null:
+		var cooked: Food = what_is_inside.food
+		if cooked != null:
+			# Swap raw mesh to cooked result mesh on the existing MeshInstance3D
+			if is_instance_valid(in_plate_raw_food):
+				in_plate_raw_food.mesh = cooked.mesh
+				in_plate_raw_food.scale = cooked.mesh_scale
+				# Small vertical nudge to avoid z-fighting with plate, similar to previous behavior
+				in_plate_raw_food.position = cooked.mesh_position + Vector3(0.0, 0.01, 0.0)
+			Global.score += 1
+			Signalbus.score_changed.emit(Global.score)
+			Signalbus.food_cooked.emit(cooked)
+	# Remove the raw resource reference; keep the cooked mesh visible until next cycle
 	what_is_inside = null
+	# Always notify that the cooking cycle is completed so the queue can wait for Finish
+	Signalbus.cooking_cycle_completed.emit()
 
 var _result_mesh_instance: MeshInstance3D = null
-
-func _show_result_mesh(food: Food) -> void:
-	if _result_mesh_instance != null and is_instance_valid(_result_mesh_instance):
-		_result_mesh_instance.queue_free()
-		_result_mesh_instance = null
-	if food.mesh == null:
-		return
-	var mi := MeshInstance3D.new()
-	mi.mesh = food.mesh
-	mi.scale = food.mesh_scale
-	mi.position = food.mesh_position
-	mi.position.y += 0.01
-	plate.add_child(mi)
-	_result_mesh_instance = mi

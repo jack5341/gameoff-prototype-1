@@ -30,6 +30,7 @@ alignment = 1
 
 [node name="Score" type="Label" parent="MarginContainer/HBoxContainer"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 32
 text = "🪙 0"
 
 [node name="Spacer" type="Control" parent="MarginContainer/HBoxContainer"]
@@ -47,3 +48,9 @@ layout_mode = 2
 [node name="BalanceBar" parent="MarginContainer/CenterContainer" instance=ExtResource("1_7tb4a")]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
+
+[node name="FinishHint" type="Label" parent="MarginContainer"]
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Press F to finish"
