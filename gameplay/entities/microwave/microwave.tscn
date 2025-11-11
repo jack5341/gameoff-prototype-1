@@ -1,10 +1,11 @@
-[gd_scene load_steps=11 format=3 uid="uid://cw8mjn832rl2y"]
+[gd_scene load_steps=13 format=3 uid="uid://cw8mjn832rl2y"]
 
 [ext_resource type="Script" uid="uid://ci2vahfklqkjo" path="res://gameplay/entities/microwave/microwave.gd" id="1_pc5h4"]
 [ext_resource type="Texture2D" uid="uid://dti6qqmj1vp6j" path="res://addons/kenney_prototype-textures/PNG/Dark/texture_04.png" id="2_glk8q"]
 [ext_resource type="Texture2D" uid="uid://v125ky6htoku" path="res://addons/kenney_prototype-textures/PNG/Dark/texture_01.png" id="2_xxcka"]
 [ext_resource type="PackedScene" uid="uid://b3ingre68ts7r" path="res://ui/screens/hud.tscn" id="4_2katx"]
 [ext_resource type="Texture2D" uid="uid://cuylda24lvm6p" path="res://addons/kenney_prototype-textures/PNG/Light/texture_11.png" id="5_lxap8"]
+[ext_resource type="Shader" uid="uid://v8xvw5dpdnc2" path="res://shaders/psx.gdshader" id="6_psx"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lxap8"]
 albedo_texture = ExtResource("2_xxcka")
@@ -22,6 +23,19 @@ albedo_texture = ExtResource("5_lxap8")
 transparency = 1
 albedo_color = Color(0.11372549, 0.11372549, 0.11372549, 0.85490197)
 albedo_texture = ExtResource("2_glk8q")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_psx"]
+shader = ExtResource("6_psx")
+shader_parameter/resolution_x = 320
+shader_parameter/resolution_y = 240
+shader_parameter/color_bit_depth = 5
+shader_parameter/dither_strength = 0.09
+shader_parameter/jitter_amount = 0.0
+shader_parameter/jitter_speed = 0.0
+shader_parameter/jitter_frequency = -0.04
+shader_parameter/chromatic_aberration_strength = 0.0050000002375
+shader_parameter/vignette_strength = 0.8
+shader_parameter/vignette_radius = 0.9
 
 [node name="Microwave" type="Node3D"]
 script = ExtResource("1_pc5h4")
@@ -53,7 +67,10 @@ transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 0.019511923, 0)
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0.15453815, 0)
 light_specular = 0.0
 
-[node name="Hud" parent="." instance=ExtResource("4_2katx")]
+[node name="HudLayer" type="CanvasLayer" parent="."]
+layer = 101
+
+[node name="Hud" parent="HudLayer" instance=ExtResource("4_2katx")]
 script = null
 
 [node name="Camera3D" type="Camera3D" parent="."]
@@ -82,3 +99,16 @@ size = Vector3(0.43557435, 0.27277222, 0.05287552)
 material = SubResource("StandardMaterial3D_ewjbj")
 
 [node name="Timer" type="Timer" parent="."]
+
+[node name="PostProcess" type="CanvasLayer" parent="."]
+layer = 100
+
+[node name="PSX" type="ColorRect" parent="PostProcess"]
+material = SubResource("ShaderMaterial_psx")
+use_parent_material = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
