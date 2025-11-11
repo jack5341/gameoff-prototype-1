@@ -1,6 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://cy7j0d0ake7ly"]
+[gd_scene load_steps=8 format=3 uid="uid://cy7j0d0ake7ly"]
 
 [ext_resource type="Texture2D" uid="uid://v125ky6htoku" path="res://addons/kenney_prototype-textures/PNG/Dark/texture_01.png" id="1_s0xps"]
+[ext_resource type="PackedScene" uid="uid://cw8mjn832rl2y" path="res://gameplay/entities/microwave/microwave.tscn" id="2_gbsl3"]
+[ext_resource type="Script" uid="uid://dl1go4f37lrfu" path="res://core/systems/food_queue.gd" id="3_o7ecn"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_s0xps"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -29,3 +31,9 @@ material = SubResource("StandardMaterial3D_gbsl3")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.70710677, 0.70710677, 0, -0.70710677, 0.70710677, 0, 19, 42)
+
+[node name="Microwave" parent="." instance=ExtResource("2_gbsl3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7634126, 0)
+
+[node name="FoodQueue" type="Node" parent="."]
+script = ExtResource("3_o7ecn")

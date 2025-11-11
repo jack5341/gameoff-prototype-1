@@ -1,22 +1,10 @@
-[gd_scene load_steps=14 format=3 uid="uid://cw8mjn832rl2y"]
+[gd_scene load_steps=11 format=3 uid="uid://cw8mjn832rl2y"]
 
 [ext_resource type="Script" uid="uid://ci2vahfklqkjo" path="res://gameplay/entities/microwave/microwave.gd" id="1_pc5h4"]
 [ext_resource type="Texture2D" uid="uid://dti6qqmj1vp6j" path="res://addons/kenney_prototype-textures/PNG/Dark/texture_04.png" id="2_glk8q"]
 [ext_resource type="Texture2D" uid="uid://v125ky6htoku" path="res://addons/kenney_prototype-textures/PNG/Dark/texture_01.png" id="2_xxcka"]
 [ext_resource type="PackedScene" uid="uid://b3ingre68ts7r" path="res://ui/screens/hud.tscn" id="4_2katx"]
 [ext_resource type="Texture2D" uid="uid://cuylda24lvm6p" path="res://addons/kenney_prototype-textures/PNG/Light/texture_11.png" id="5_lxap8"]
-
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_2katx"]
-sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
-ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
-
-[sub_resource type="Sky" id="Sky_lxap8"]
-sky_material = SubResource("ProceduralSkyMaterial_2katx")
-
-[sub_resource type="Environment" id="Environment_ewjbj"]
-background_mode = 2
-sky = SubResource("Sky_lxap8")
-tonemap_mode = 2
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lxap8"]
 albedo_texture = ExtResource("2_xxcka")
@@ -32,18 +20,11 @@ albedo_texture = ExtResource("5_lxap8")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ewjbj"]
 transparency = 1
-albedo_color = Color(0.11372549, 0.11372549, 0.11372549, 0.67058825)
+albedo_color = Color(0.11372549, 0.11372549, 0.11372549, 0.85490197)
 albedo_texture = ExtResource("2_glk8q")
 
 [node name="Microwave" type="Node3D"]
 script = ExtResource("1_pc5h4")
-
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.04569426, 0.9989554, 0, -0.9989554, 0.04569426, 0, 2.0944316, 1.2493637)
-shadow_enabled = true
-
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Environment_ewjbj")
 
 [node name="CSGCombiner3D" type="CSGCombiner3D" parent="."]
 use_collision = true
@@ -59,9 +40,6 @@ operation = 2
 size = Vector3(0.5080322, 0.31862792, 0.7190552)
 material = SubResource("StandardMaterial3D_2katx")
 
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, -0.40968797)
-
 [node name="Plate" type="CSGCylinder3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.15032774, 0)
 radius = 0.192
@@ -70,8 +48,14 @@ material = SubResource("StandardMaterial3D_xxcka")
 
 [node name="Light" type="SpotLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0.15453815, 0)
+light_specular = 0.0
 
 [node name="Hud" parent="." instance=ExtResource("4_2katx")]
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, -0.5163981)
+fov = 43.3
+near = 0.035
 
 [node name="Door" type="Node3D" parent="."]
 
@@ -92,3 +76,5 @@ size = Vector3(0.5080322, 0.31862792, 0.05287552)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.9594998, 6.866455e-05, -0.0008209348, 0.26423553)
 size = Vector3(0.43557435, 0.27277222, 0.05287552)
 material = SubResource("StandardMaterial3D_ewjbj")
+
+[node name="Timer" type="Timer" parent="."]

@@ -43,4 +43,5 @@ text = "12:20"
 layout_mode = 2
 
 [node name="BalanceBar" parent="MarginContainer/CenterContainer" instance=ExtResource("1_7tb4a")]
+custom_minimum_size = Vector2(200, 0)
 layout_mode = 2

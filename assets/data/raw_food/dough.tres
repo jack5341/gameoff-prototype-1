@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="RawFood" load_steps=3 format=3 uid="uid://mn7f0fxf5j87"]
+
+[ext_resource type="Resource" uid="uid://61djxenrga3f" path="res://assets/data/food/pasta.tres" id="1_doqqx"]
+[ext_resource type="Script" uid="uid://dkp0ct66kh5lp" path="res://assets/data/raw_food/raw_food.gd" id="1_lycoc"]
+
+[resource]
+script = ExtResource("1_lycoc")
+food = ExtResource("1_doqqx")
+metadata/_custom_type_script = "uid://dkp0ct66kh5lp"
