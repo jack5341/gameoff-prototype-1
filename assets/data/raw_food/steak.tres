@@ -8,6 +8,7 @@
 script = ExtResource("1_x6geo")
 time_to_cook = 6.0
 difficulty_to_cook = 3
+dialogue_lines = Array[String](["Let’s hope Abel stays healthy around me this time!", "You mess with the meat, you get the sauce", "Pasta la vista, baby."])
 food = ExtResource("1_p6o40")
 name = "Steak"
 mesh = ExtResource("1_v7nms")

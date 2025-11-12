@@ -8,6 +8,7 @@
 script = ExtResource("1_rpj8s")
 time_to_cook = 5.0
 difficulty_to_cook = 2
+dialogue_lines = Array[String](["Don't count your chickens before they're cooked!", "I'm egg-cited to be cooked!", "This is going to be egg-cellent!"])
 food = ExtResource("1_au1mx")
 name = "Egg"
 mesh = ExtResource("1_o1561")
