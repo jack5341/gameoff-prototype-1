@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="Food" load_steps=3 format=3 uid="uid://d1l5lm3imucnw"]
+
+[ext_resource type="ArrayMesh" uid="uid://k40wck862a1j" path="res://assets/models/kitchen/foods/egg_sunny_side_up.res" id="1_kl243"]
+[ext_resource type="Script" uid="uid://dqh6hctw7yuub" path="res://assets/data/food/food.gd" id="1_m7h54"]
+
+[resource]
+script = ExtResource("1_m7h54")
+name = "Egg Sunny Side Up"
+mesh = ExtResource("1_kl243")
+mesh_scale = Vector3(0.05, 0.05, 0.05)
+metadata/_custom_type_script = "uid://dqh6hctw7yuub"

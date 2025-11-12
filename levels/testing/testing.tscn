@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://cy7j0d0ake7ly"]
+[gd_scene load_steps=13 format=3 uid="uid://cy7j0d0ake7ly"]
 
 [ext_resource type="Texture2D" uid="uid://v125ky6htoku" path="res://addons/kenney_prototype-textures/PNG/Dark/texture_01.png" id="1_s0xps"]
 [ext_resource type="PackedScene" uid="uid://cw8mjn832rl2y" path="res://gameplay/entities/microwave/microwave.tscn" id="2_gbsl3"]
@@ -6,6 +6,8 @@
 [ext_resource type="Script" uid="uid://dkp0ct66kh5lp" path="res://assets/data/raw_food/raw_food.gd" id="4_vcn57"]
 [ext_resource type="Resource" uid="uid://mn7f0fxf5j87" path="res://assets/data/raw_food/dough.tres" id="5_o0bc2"]
 [ext_resource type="Resource" uid="uid://dg08vuxhag7xp" path="res://assets/data/raw_food/steak.tres" id="6_o0bc2"]
+[ext_resource type="Resource" uid="uid://dojy1kgyjpebx" path="res://assets/data/raw_food/egg.tres" id="7_f0akt"]
+[ext_resource type="Script" uid="uid://dpsysto2gc0tr" path="res://core/managers/audio_manager.gd" id="8_36fb2"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_s0xps"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -40,4 +42,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7634126, 0)
 
 [node name="FoodQueue" type="Node" parent="."]
 script = ExtResource("3_o7ecn")
-available_raw_foods = Array[ExtResource("4_vcn57")]([ExtResource("5_o0bc2"), ExtResource("6_o0bc2")])
+available_raw_foods = Array[ExtResource("4_vcn57")]([ExtResource("5_o0bc2"), ExtResource("6_o0bc2"), ExtResource("7_f0akt")])
+
+[node name="AudioManager" type="Node" parent="."]
+script = ExtResource("8_36fb2")

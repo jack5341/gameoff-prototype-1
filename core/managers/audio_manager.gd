@@ -12,7 +12,6 @@ var _next_music: AudioStreamPlayer = null
 var _sfx_pool: Array = []
 
 func _ready() -> void:
-	# Music players (for crossfading)
 	_music_player_a = AudioStreamPlayer.new()
 	_music_player_a.bus = str(music_bus_name)
 	_music_player_a.volume_db = -80.0
