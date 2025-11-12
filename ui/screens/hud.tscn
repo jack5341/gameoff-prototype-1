@@ -53,7 +53,7 @@ text = "12:20"
 layout_mode = 2
 
 [node name="BalanceBar" parent="TopBar/CenterContainer" instance=ExtResource("1_7tb4a")]
-custom_minimum_size = Vector2(200, 0)
+custom_minimum_size = Vector2(400, 24)
 layout_mode = 2
 
 [node name="HintBar" type="MarginContainer" parent="."]
