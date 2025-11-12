@@ -12,6 +12,14 @@ var _next_music: AudioStreamPlayer = null
 var _sfx_pool: Array = []
 
 func _ready() -> void:
+	# Ensure buses exist; fall back to Master if missing (e.g., Web export without custom bus layout)
+	var music_idx := AudioServer.get_bus_index(str(music_bus_name))
+	if music_idx < 0:
+		music_bus_name = &"Master"
+	var sfx_idx := AudioServer.get_bus_index(str(sfx_bus_name))
+	if sfx_idx < 0:
+		sfx_bus_name = &"Master"
+
 	_music_player_a = AudioStreamPlayer.new()
 	_music_player_a.bus = str(music_bus_name)
 	_music_player_a.volume_db = -80.0
