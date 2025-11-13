@@ -1,6 +1,7 @@
 extends Node
 
 @export var microwave: Microwave
+@export var current_wattage: int = 100
 
 var current_zone: int = 0
 var remaining_time: float = 0.0
@@ -15,6 +16,8 @@ var base_points: int = 10
 var _timer: Timer = null
 
 func _ready() -> void:
+	Signalbus.change_power_microwave.connect(_on_change_power_microwave)
+	
 	if microwave == null:
 		microwave = get_parent() as Microwave
 	_timer = microwave.get_node_or_null("Timer") as Timer
@@ -28,6 +31,9 @@ func _ready() -> void:
 		Signalbus.balance_zone_changed.connect(_on_balance_zone_changed)
 	set_process(true)
 
+func _on_change_power_microwave(wattage: int) -> void:
+	current_wattage = wattage
+
 func _process(delta: float) -> void:
 	_handle_cook_progress(delta)
 
@@ -40,7 +46,6 @@ func _on_request_raw_food_cook(raw: RawFood) -> void:
 	if microwave.visual != null:
 		microwave.visual.show_raw_food(raw)
 	microwave.started = true
-	microwave.temperature = raw.raw_temprature
 	remaining_time = max(0.0, raw.time_to_cook)
 	initial_time = remaining_time
 	burn_level = 0.0

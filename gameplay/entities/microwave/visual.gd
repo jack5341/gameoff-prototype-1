@@ -2,19 +2,20 @@ extends Node
 
 @export var microwave: Microwave
 
-var rotation_speed: float = 90.0
+var plate_rpm: float = 90.0
 
-var _plate: CSGCylinder3D = null
-var _light: SpotLight3D = null
-var _in_plate_raw_food: MeshInstance3D = null
+@export var _plate: CSGCylinder3D = null
+@export var _light: SpotLight3D = null
+@export var _in_plate_raw_food: MeshInstance3D = null
 
 func _ready() -> void:
-	if microwave == null:
-		microwave = get_parent() as Microwave
-	_plate = microwave.get_node_or_null("Plate") as CSGCylinder3D
-	_light = microwave.get_node_or_null("Light") as SpotLight3D
-	_in_plate_raw_food = microwave.get_node_or_null("Plate/MeshInstance3D") as MeshInstance3D
+	Signalbus.change_rpm_microwave.connect(_on_change_rpm_microwave)
+	if _in_plate_raw_food == null:
+		_in_plate_raw_food = microwave.get_node_or_null("Plate/MeshInstance3D") as MeshInstance3D
 	set_process(true)
+
+func _on_change_rpm_microwave(rpm: float) -> void:
+	plate_rpm = rpm
 
 func _process(delta: float) -> void:
 	_handle_rotate_plate(delta)
@@ -22,7 +23,7 @@ func _process(delta: float) -> void:
 
 func _handle_rotate_plate(delta: float) -> void:
 	if microwave != null and microwave.started and microwave.what_is_inside != null and _plate != null:
-		_plate.rotate_y(deg_to_rad(rotation_speed * delta))
+		_plate.rotate_y(deg_to_rad(plate_rpm * delta))
 
 func _handle_light(_delta: float) -> void:
 	if _light == null or microwave == null:

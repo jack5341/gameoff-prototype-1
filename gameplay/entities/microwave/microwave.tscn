@@ -148,6 +148,9 @@ microwave = NodePath("..")
 script = ExtResource("9_vtfc8")
 microwave = NodePath("..")
 
-[node name="Visual" type="Node" parent="." node_paths=PackedStringArray("microwave")]
+[node name="Visual" type="Node" parent="." node_paths=PackedStringArray("microwave", "_plate", "_light", "_in_plate_raw_food")]
 script = ExtResource("10_g00tf")
 microwave = NodePath("..")
+_plate = NodePath("../Plate")
+_light = NodePath("../Light")
+_in_plate_raw_food = NodePath("../Plate/MeshInstance3D")

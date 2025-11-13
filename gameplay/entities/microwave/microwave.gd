@@ -1,17 +1,10 @@
 class_name Microwave extends Node3D
 
 @export var what_is_inside: RawFood = null
-@export var temperature: int = 0
 @export var started: bool = false
-@export var green_cook_rate: float = 1.0
-@export var blue_uncook_rate: float = 0.75
-@export var red_cook_rate: float = 1.5
-@export var blue_cook_rate: float = 0.5
 @export var undercook_weight: float = 0.75
 @export var burn_weight: float = 0.25
-@export var burn_threshold: float = 2.5
 
-@onready var door: Node3D = $Door
 @onready var cooking: Node = $Cooking
 @onready var dialogues: Node = $Dialogues
 @onready var visual: Node = $Visual
@@ -22,7 +15,7 @@ var _time_accumulator: float = 0.0
 func _ready() -> void:
 	AudioManager.play_music_from_path("res://assets/audio/music/lofi.mp3")
 	await get_tree().process_frame
-	AudioManager.set_bus_volume_db(AudioManager.music_bus_name, -20)
+	AudioManager.set_bus_volume_db(AudioManager.music_bus_name, -30)
 
 func _process(delta: float) -> void:
 	_handle_session_timer(delta)

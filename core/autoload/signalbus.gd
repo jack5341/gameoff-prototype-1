@@ -16,3 +16,13 @@ signal waiting_for_finish_changed(active: bool)
 signal balance_zone_changed(zone: int) # -1=blue, 0=green, 1=red
 @warning_ignore("UNUSED_SIGNAL")
 signal set_balance_bar_difficulty(level: int) # 1=EASY, 2=MEDIUM, 3=HARD
+
+@warning_ignore("UNUSED_SIGNAL")
+signal change_rpm_microwave(rpm: float)
+@warning_ignore("UNUSED_SIGNAL")
+signal change_power_microwave(wattage: int)
+@warning_ignore("UNUSED_SIGNAL")
+signal change_temperature_microwave(temperature: int)
+
+@warning_ignore("UNUSED_SIGNAL")
+signal combo_changed(streak: int, multiplier: int)
