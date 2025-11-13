@@ -3,6 +3,11 @@ extends Control
 @onready var score_label: Label = $TopBar/HBoxContainer/Score
 @onready var countdown_label: Label = $TopBar/HBoxContainer/Countdown
 @onready var hint_bar: Label = $HintBar/FinishHint
+@onready var rpm_label: Label = $MarginContainer/HBoxContainer/VBoxContainer2/RPM
+@onready var wattage_label: Label = $MarginContainer/HBoxContainer/VBoxContainer/Wattage
+@onready var rpm_slider: VSlider = $MarginContainer/HBoxContainer/VBoxContainer2/VSlider
+@onready var wattage_slider: VSlider = $MarginContainer/HBoxContainer/VBoxContainer/VSlider
+
 var last_displayed_score: int = -1
 var last_displayed_seconds: int = -1
 
@@ -13,6 +18,28 @@ func _ready() -> void:
 	Signalbus.time_remaining_changed.connect(_on_time_remaining_changed)
 	if not Signalbus.waiting_for_finish_changed.is_connected(_on_waiting_for_finish_changed):
 		Signalbus.waiting_for_finish_changed.connect(_on_waiting_for_finish_changed)
+	
+	# Configure RPM slider
+	if rpm_slider != null:
+		rpm_slider.min_value = 0
+		rpm_slider.max_value = 180
+		rpm_slider.step = 5
+		rpm_slider.value = 90  # Default RPM
+		if not rpm_slider.value_changed.is_connected(_on_rpm_changed):
+			rpm_slider.value_changed.connect(_on_rpm_changed)
+		_update_rpm_label(rpm_slider.value)
+		Signalbus.change_rpm_microwave.emit(rpm_slider.value)
+	
+	# Configure Wattage slider
+	if wattage_slider != null:
+		wattage_slider.min_value = 0
+		wattage_slider.max_value = 200
+		wattage_slider.step = 10
+		wattage_slider.value = 100  # Default wattage
+		if not wattage_slider.value_changed.is_connected(_on_wattage_changed):
+			wattage_slider.value_changed.connect(_on_wattage_changed)
+		_update_wattage_label(wattage_slider.value)
+		Signalbus.change_power_microwave.emit(int(wattage_slider.value))
 
 func _process(_delta: float) -> void:
 	if Global.score != last_displayed_score:
@@ -41,3 +68,19 @@ func _on_waiting_for_finish_changed(active: bool) -> void:
 	if hint_bar == null:
 		return
 	hint_bar.visible = active
+
+func _on_rpm_changed(value: float) -> void:
+	_update_rpm_label(value)
+	Signalbus.change_rpm_microwave.emit(value)
+
+func _on_wattage_changed(value: float) -> void:
+	_update_wattage_label(value)
+	Signalbus.change_power_microwave.emit(int(value))
+
+func _update_rpm_label(value: float) -> void:
+	if rpm_label != null:
+		rpm_label.text = "%.0f RPM" % value
+
+func _update_wattage_label(value: float) -> void:
+	if wattage_label != null:
+		wattage_label.text = "%.0f W" % value

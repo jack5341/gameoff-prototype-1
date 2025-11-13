@@ -22,6 +22,10 @@ Constant="*res://core/autoload/constant.gd"
 AudioManager="*res://core/managers/audio_manager.gd"
 Global="*res://core/autoload/global.gd"
 
+[gui]
+
+theme/custom_font="uid://dprhoem533dxi"
+
 [input]
 
 finish={
