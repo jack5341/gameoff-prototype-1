@@ -23,3 +23,7 @@ class_name RawFood extends Base
 @export_group("Gameplay")
 @export var dialogue_lines: Array[String] = []
 @export var food: Food = null
+
+@export_group("Balance Bar")
+@export var balance_speed: float = 1.0  # Speed of arrow movement (units per second)
+@export var balance_direction: int = 1  # 1 = left to right, -1 = right to left (for future use)

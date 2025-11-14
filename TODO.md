@@ -1,1 +1,2 @@
 - managing 2 plate
+- upgrade plates and decoration buying

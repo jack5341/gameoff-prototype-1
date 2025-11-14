@@ -176,6 +176,8 @@ func _on_combo_changed(streak: int, multiplier: float) -> void:
 		combo_label.text = "x%.1f" % multiplier
 		if streak > _combo_last_streak:
 			_bounce_combo_label()
+			AudioManager.play_sfx(load("res://assets/audio/sfx/combo.mp3"))
+
 	_combo_last_streak = (streak if should_show else 0)
 
 func _bounce_combo_label() -> void:

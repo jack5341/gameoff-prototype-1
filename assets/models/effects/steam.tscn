@@ -16,7 +16,7 @@ billboard_mode = 1
 
 [sub_resource type="QuadMesh" id="3"]
 material = SubResource("2")
-size = Vector2(0.03, 0.03)
+size = Vector2(0.01, 0.03)
 
 [node name="Steam" type="Node3D"]
 

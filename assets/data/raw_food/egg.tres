@@ -19,6 +19,7 @@ power_level = 0.9
 temperature_level = 1.1
 dialogue_lines = Array[String](["Don't count your chickens before they're cooked!", "I'm egg-cited to be cooked!", "This is going to be egg-cellent!"])
 food = ExtResource("1_au1mx")
+balance_speed = 0.8
 name = "Egg"
 mesh = ExtResource("1_o1561")
 mesh_scale = Vector3(0.1, 0.1, 0.1)

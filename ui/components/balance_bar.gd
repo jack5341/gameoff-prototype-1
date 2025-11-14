@@ -5,10 +5,6 @@ enum Difficulty { EASY, MEDIUM, HARD }
 enum Zone { BLUE = -1, GREEN = 0, RED = 1 }
 @export var difficulty: Difficulty = Difficulty.MEDIUM: set = set_difficulty, get = get_difficulty
 @export var zone_width_ratio: float = 0.35: set = set_zone_width_ratio, get = get_zone_width_ratio
-@export var return_speed_ratio: float = 0.25
-@export var bounce_duration: float = 0.15
-@export var bounce_trans: int = Tween.TRANS_CUBIC
-@export var bounce_ease: int = Tween.EASE_OUT
 
 @export_category("Combo")
 @export var combo_max_multiplier: float = 2.0
@@ -20,15 +16,15 @@ enum Zone { BLUE = -1, GREEN = 0, RED = 1 }
 @onready var left_spacer: Control = $"Center/BarContent/ZoneHBox/LeftSpacer"
 @onready var right_spacer: Control = $"Center/BarContent/ZoneHBox/RightSpacer"
 
-var arrow_ratio: float = 0.5
+var arrow_ratio: float = 0.0
 var zone_left_global: float = 0.0
 var zone_right_global: float = 0.0
-var bounce_ratio: float = 0.18
 var _space_was_pressed: bool = false
-var _is_bouncing: bool = false
-var _bounce_tween: Tween = null
 var _current_zone: int = Zone.BLUE
 var streak: int = 0
+var combo_input_enabled: bool = false
+var _current_balance_speed: float = 1.0  # Current speed from food config
+var _movement_direction: int = 1  # 1 = left to right, -1 = right to left
 
 func _ready() -> void:
 	# Start from far left
@@ -38,8 +34,9 @@ func _ready() -> void:
 	_update_zone_bounds()
 	_update_arrow_position()
 	set_process(true)
-	if not Signalbus.set_balance_bar_difficulty.is_connected(_on_set_balance_bar_difficulty):
-		Signalbus.set_balance_bar_difficulty.connect(_on_set_balance_bar_difficulty)
+	Signalbus.set_balance_bar_difficulty.connect(_on_set_balance_bar_difficulty)
+	Signalbus.request_raw_food_cook.connect(_on_request_raw_food_cook)
+	Signalbus.cooking_cycle_completed.connect(_on_cooking_cycle_completed)
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_RESIZED:
@@ -47,21 +44,28 @@ func _notification(what: int) -> void:
 		_update_arrow_position()
 
 func _process(delta: float) -> void:
-	# Discrete bounce to the right on Space press
+	# Continuous left-to-right-to-left movement (pendulum)
+	if combo_input_enabled:
+		arrow_ratio += _current_balance_speed * _movement_direction * delta
+		# Reverse direction at edges
+		if arrow_ratio >= 1.0:
+			arrow_ratio = 1.0
+			_movement_direction = -1  # Reverse to right-to-left
+		elif arrow_ratio <= 0.0:
+			arrow_ratio = 0.0
+			_movement_direction = 1  # Reverse to left-to-right
+	
+	# Check space press for combo (no bounce)
 	var pressed: bool = Input.is_physical_key_pressed(KEY_SPACE)
-	if pressed and not _space_was_pressed:
+	if pressed and not _space_was_pressed and combo_input_enabled:
 		var inside: bool = _is_arrow_inside_green()
 		if inside:
 			streak += 1
 		else:
 			streak = 0
 		Signalbus.combo_changed.emit(streak, _compute_multiplier(streak))
-		_bounce()
 	_space_was_pressed = pressed
 	
-	# Constant drift back to the left (Flappy-Bird-style gravity)
-	if not _is_bouncing:
-		arrow_ratio = clamp(arrow_ratio - return_speed_ratio * delta, 0.0, 1.0)
 	_update_arrow_position()
 	_update_arrow_color()
 	_emit_zone_if_changed()
@@ -77,6 +81,19 @@ func _compute_multiplier(s: int) -> float:
 	var s_f: float = float(max(0, s))
 	var gain: float = 1.0 - exp(-s_f * max(0.0, combo_growth_rate))
 	return clamp(1.0 + (combo_max_multiplier - 1.0) * gain, 1.0, max(1.0, combo_max_multiplier))
+
+func _on_request_raw_food_cook(raw: RawFood) -> void:
+	combo_input_enabled = true
+	if raw != null:
+		_current_balance_speed = raw.balance_speed
+		# Reset arrow to start from left, moving right
+		arrow_ratio = 0.0
+		_movement_direction = 1
+
+func _on_cooking_cycle_completed() -> void:
+	combo_input_enabled = false
+	# Reset arrow position when cooking stops
+	arrow_ratio = 0.0
 
 func _update_zone_bounds() -> void:
 	if zone == null:
@@ -117,26 +134,8 @@ func _apply_zone_layout() -> void:
 	right_spacer.size_flags_stretch_ratio = side_ratio
 	zone.size_flags_stretch_ratio = clamped_zone_ratio
 
-func _bounce() -> void:
-	var target: float = clamp(arrow_ratio + bounce_ratio, 0.0, 1.0)
-	if is_equal_approx(target, arrow_ratio):
-		return
-	if _bounce_tween != null and is_instance_valid(_bounce_tween):
-		_bounce_tween.kill()
-	_bounce_tween = create_tween()
-	_is_bouncing = true
-	_bounce_tween.set_trans(bounce_trans).set_ease(bounce_ease)
-	_bounce_tween.tween_property(self, "arrow_ratio", target, bounce_duration)
-	_bounce_tween.tween_callback(Callable(self, "_on_bounce_finished"))
-
 func reset_arrow() -> void:
 	arrow_ratio = 0.0
-	_update_arrow_position()
-	_update_arrow_color()
-
-func _on_bounce_finished() -> void:
-	_is_bouncing = false
-	_bounce_tween = null
 	_update_arrow_position()
 	_update_arrow_color()
 
@@ -148,20 +147,14 @@ func get_difficulty() -> int:
 	return difficulty
 
 func _apply_difficulty() -> void:
-	# Harder: smaller green zone, bigger bounce
+	# Harder: smaller green zone
 	match difficulty:
 		Difficulty.EASY:
 			set_zone_width_ratio(0.45)
-			bounce_ratio = 0.12
-			return_speed_ratio = 0.20
 		Difficulty.MEDIUM:
 			set_zone_width_ratio(0.35)
-			bounce_ratio = 0.18
-			return_speed_ratio = 0.25
 		Difficulty.HARD:
 			set_zone_width_ratio(0.22)
-			bounce_ratio = 0.25
-			return_speed_ratio = 0.32
 
 func _emit_zone_if_changed() -> void:
 	if arrow == null:
