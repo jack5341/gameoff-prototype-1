@@ -149,9 +149,10 @@ mouse_filter = 2
 script = ExtResource("8_7lbod")
 microwave = NodePath("..")
 
-[node name="Cooking" type="Node" parent="." node_paths=PackedStringArray("microwave")]
+[node name="Cooking" type="Node" parent="." node_paths=PackedStringArray("microwave", "timer")]
 script = ExtResource("9_vtfc8")
 microwave = NodePath("..")
+timer = NodePath("../Timer")
 
 [node name="Visual" type="Node" parent="." node_paths=PackedStringArray("microwave", "_plate", "_light", "_in_plate_raw_food", "_effect_burn", "_effect_cold", "_effect_steam")]
 script = ExtResource("10_g00tf")

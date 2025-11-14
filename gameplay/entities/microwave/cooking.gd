@@ -2,6 +2,7 @@ extends Node
 
 @export var microwave: Microwave
 @export var current_wattage: int = 100
+@export var timer: Timer = null
 
 var current_zone: int = 0
 var remaining_time: float = 0.0
@@ -13,22 +14,15 @@ var red_rate: float = 1.5
 var burn_threshold: float = 2.5
 var base_points: int = 10
 
-var _timer: Timer = null
+var current_combo_multiplier: float = 1.0
+var current_combo_streak: int = 0
 
 func _ready() -> void:
 	Signalbus.change_power_microwave.connect(_on_change_power_microwave)
 	
-	if microwave == null:
-		microwave = get_parent() as Microwave
-	_timer = microwave.get_node_or_null("Timer") as Timer
-	if _timer:
-		_timer.one_shot = true
-		if not _timer.timeout.is_connected(_on_timer_timeout):
-			_timer.timeout.connect(_on_timer_timeout)
-	if not Signalbus.request_raw_food_cook.is_connected(_on_request_raw_food_cook):
-		Signalbus.request_raw_food_cook.connect(_on_request_raw_food_cook)
-	if not Signalbus.balance_zone_changed.is_connected(_on_balance_zone_changed):
-		Signalbus.balance_zone_changed.connect(_on_balance_zone_changed)
+	timer.timeout.connect(_on_timer_timeout)
+	Signalbus.request_raw_food_cook.connect(_on_request_raw_food_cook)
+	Signalbus.balance_zone_changed.connect(_on_balance_zone_changed)
 	set_process(true)
 
 func _on_change_power_microwave(wattage: int) -> void:
@@ -55,8 +49,7 @@ func _on_request_raw_food_cook(raw: RawFood) -> void:
 	burn_threshold = raw.burn_time_threshold
 	base_points = raw.base_points
 	Signalbus.set_balance_bar_difficulty.emit(raw.difficulty_to_cook)
-	if _timer:
-		_timer.stop()
+	timer.stop()
 	if microwave.dialogues != null:
 		microwave.dialogues.start_dialogue_loop(raw.dialogue_lines)
 
@@ -100,9 +93,13 @@ func _finalize_cooking() -> void:
 			var undercook_penalty: float = clamp(remaining_time / max(initial_time, 0.0001), 0.0, 2.0)
 			var burn_penalty: float = clamp(burn_level / burn_threshold, 0.0, 1.0)
 			var quality_ratio: float = clamp(1.0 - (microwave.undercook_weight * undercook_penalty + microwave.burn_weight * burn_penalty), 0.0, 1.0)
-			var points: int = int(round(float(base_points) * quality_ratio))
+			var points: int = int(round(float(base_points) * quality_ratio * max(1.0, current_combo_multiplier)))
 			Global.score += max(0, points)
 			Signalbus.food_cooked.emit(cooked)
 			Signalbus.score_changed.emit(Global.score)
 	microwave.what_is_inside = null
 	Signalbus.cooking_cycle_completed.emit()
+
+func _on_combo_changed(streak: int, multiplier: float) -> void:
+	current_combo_streak = max(0, streak)
+	current_combo_multiplier = max(1.0, multiplier)

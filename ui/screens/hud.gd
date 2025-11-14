@@ -10,15 +10,20 @@ extends Control
 @onready var dialogues_label: Label = $TextBar/Dialogues
 @onready var text_bar: Panel = $TextBar
 
-@onready var rpm_label: Label = $ControlPanel/HBoxContainer/VBoxContainer2/RPM
-@onready var wattage_label: Label = $ControlPanel/HBoxContainer/VBoxContainer/Wattage
-@onready var rpm_slider: VSlider = $ControlPanel/HBoxContainer/VBoxContainer2/VSlider
-@onready var wattage_slider: VSlider = $ControlPanel/HBoxContainer/VBoxContainer/VSlider
+@onready var rpm_label: Label = $ControlPanel/HBoxContainer/RPMBar/RPM
+@onready var wattage_label: Label = $ControlPanel/HBoxContainer/WattageBar/Wattage
+@onready var rpm_slider: VSlider = $ControlPanel/HBoxContainer/RPMBar/VSlider
+@onready var wattage_slider: VSlider = $ControlPanel/HBoxContainer/WattageBar/VSlider
+
+@onready var combo_label: Label = $ControlPanel/HBoxContainer/Control/ComboLabel
+
 @onready var guide: CenterContainer = $Guide
 
 var last_displayed_score: int = -1
 var last_displayed_seconds: int = -1
 var _guide_fade_tween: Tween = null
+var _combo_tween: Tween = null
+var _combo_last_streak: int = 0
 
 func _ready() -> void:
 	_update_score(Global.score)
@@ -28,10 +33,16 @@ func _ready() -> void:
 	Signalbus.time_remaining_changed.connect(_on_time_remaining_changed)
 	Signalbus.waiting_for_finish_changed.connect(_on_waiting_for_finish_changed)	
 	Signalbus.food_talked.connect(_on_food_talked)
+	Signalbus.combo_changed.connect(_on_combo_changed)
 	
 	if guide != null:
 		guide.visible = false
 		guide.modulate.a = 0.0
+	
+	if combo_label != null:
+		combo_label.visible = false
+		combo_label.text = "x1.0"
+		combo_label.scale = Vector2.ONE
 	
 	if finish_hint_label != null:
 		finish_hint_label.visible = false
@@ -155,3 +166,25 @@ func _update_text_bar_visibility() -> void:
 	var has_dialogue: bool = dialogues_label != null and dialogues_label.visible and dialogues_label.text.strip_edges() != ""
 	var has_finish_hint: bool = finish_hint_label != null and finish_hint_label.visible
 	text_bar.visible = has_dialogue or has_finish_hint
+
+func _on_combo_changed(streak: int, multiplier: float) -> void:
+	if combo_label == null:
+		return
+	var should_show: bool = multiplier > 1.0
+	combo_label.visible = should_show
+	if should_show:
+		combo_label.text = "x%.1f" % multiplier
+		if streak > _combo_last_streak:
+			_bounce_combo_label()
+	_combo_last_streak = (streak if should_show else 0)
+
+func _bounce_combo_label() -> void:
+	if combo_label == null:
+		return
+	if _combo_tween != null:
+		_combo_tween.kill()
+	combo_label.scale = Vector2.ONE
+	_combo_tween = create_tween()
+	_combo_tween.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_combo_tween.tween_property(combo_label, "scale", Vector2(1.2, 1.2), 0.12)
+	_combo_tween.tween_property(combo_label, "scale", Vector2(1.0, 1.0), 0.18)

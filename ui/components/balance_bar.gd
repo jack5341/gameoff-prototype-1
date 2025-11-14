@@ -10,6 +10,10 @@ enum Zone { BLUE = -1, GREEN = 0, RED = 1 }
 @export var bounce_trans: int = Tween.TRANS_CUBIC
 @export var bounce_ease: int = Tween.EASE_OUT
 
+@export_category("Combo")
+@export var combo_max_multiplier: float = 2.0
+@export var combo_growth_rate: float = 0.23
+
 @onready var bar_content: Control = $"Center/BarContent"
 @onready var zone: ColorRect = $"Center/BarContent/ZoneHBox/Zone"
 @onready var arrow: ColorRect = $"Center/BarContent/ArrowLayer/Arrow"
@@ -24,6 +28,7 @@ var _space_was_pressed: bool = false
 var _is_bouncing: bool = false
 var _bounce_tween: Tween = null
 var _current_zone: int = Zone.BLUE
+var streak: int = 0
 
 func _ready() -> void:
 	# Start from far left
@@ -45,6 +50,12 @@ func _process(delta: float) -> void:
 	# Discrete bounce to the right on Space press
 	var pressed: bool = Input.is_physical_key_pressed(KEY_SPACE)
 	if pressed and not _space_was_pressed:
+		var inside: bool = _is_arrow_inside_green()
+		if inside:
+			streak += 1
+		else:
+			streak = 0
+		Signalbus.combo_changed.emit(streak, _compute_multiplier(streak))
 		_bounce()
 	_space_was_pressed = pressed
 	
@@ -54,6 +65,18 @@ func _process(delta: float) -> void:
 	_update_arrow_position()
 	_update_arrow_color()
 	_emit_zone_if_changed()
+
+func _is_arrow_inside_green() -> bool:
+	if arrow == null:
+		return false
+	var arrow_center_x: float = arrow.global_position.x + arrow.size.x * 0.5
+	return arrow_center_x >= zone_left_global and arrow_center_x <= zone_right_global
+
+func _compute_multiplier(s: int) -> float:
+	# Smooth, diminishing-returns curve approaching combo_max_multiplier
+	var s_f: float = float(max(0, s))
+	var gain: float = 1.0 - exp(-s_f * max(0.0, combo_growth_rate))
+	return clamp(1.0 + (combo_max_multiplier - 1.0) * gain, 1.0, max(1.0, combo_max_multiplier))
 
 func _update_zone_bounds() -> void:
 	if zone == null:
