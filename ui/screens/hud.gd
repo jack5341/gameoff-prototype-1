@@ -2,7 +2,9 @@ extends Control
 
 @onready var score_label: Label = $TopBar/HBoxContainer/Score
 @onready var countdown_label: Label = $TopBar/HBoxContainer/Countdown
-@onready var hint_bar: Label = $HintBar/FinishHint
+@onready var finish_hint_label: Label = $TextBar/FinishHint
+@onready var dialogues_label: Label = $TextBar/Dialogues
+@onready var text_bar: Panel = $TextBar
 
 @onready var rpm_label: Label = $ControlPanel/HBoxContainer/VBoxContainer2/RPM
 @onready var wattage_label: Label = $ControlPanel/HBoxContainer/VBoxContainer/Wattage
@@ -20,9 +22,19 @@ func _ready() -> void:
 	Signalbus.score_changed.connect(_on_score_changed)
 	Signalbus.time_remaining_changed.connect(_on_time_remaining_changed)
 	Signalbus.waiting_for_finish_changed.connect(_on_waiting_for_finish_changed)	
+	Signalbus.food_talked.connect(_on_food_talked)
 	
 	if guide != null:
 		guide.visible = false
+	
+	if finish_hint_label != null:
+		finish_hint_label.visible = false
+	
+	if dialogues_label != null:
+		dialogues_label.visible = false
+		dialogues_label.text = ""
+	
+	_update_text_bar_visibility()
 
 	if rpm_slider != null:
 		rpm_slider.min_value = 0
@@ -50,9 +62,6 @@ func _process(_delta: float) -> void:
 		_update_score(Global.score)
 	if Global.time_remaining != last_displayed_seconds:
 		_update_time(Global.time_remaining)
-	
-	if guide != null:
-		guide.visible = Input.is_action_pressed("guide")
 
 func _on_score_changed(score: int) -> void:
 	_update_score(score)
@@ -72,9 +81,10 @@ func _update_time(seconds: int) -> void:
 	last_displayed_seconds = s
 
 func _on_waiting_for_finish_changed(active: bool) -> void:
-	if hint_bar == null:
+	if finish_hint_label == null:
 		return
-	hint_bar.visible = active
+	finish_hint_label.visible = active
+	_update_text_bar_visibility()
 
 func _on_rpm_changed(value: float) -> void:
 	_update_rpm_label(value)
@@ -91,3 +101,27 @@ func _update_rpm_label(value: float) -> void:
 func _update_wattage_label(value: float) -> void:
 	if wattage_label != null:
 		wattage_label.text = "%.0f W" % value
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("guide"):
+		if guide != null:
+			guide.visible = true
+		Signalbus.guide_mode_changed.emit(true)
+	elif event.is_action_released("guide"):
+		if guide != null:
+			guide.visible = false
+		Signalbus.guide_mode_changed.emit(false)
+
+func _on_food_talked(text: String) -> void:
+	if dialogues_label == null:
+		return
+	dialogues_label.text = text
+	dialogues_label.visible = text != ""
+	_update_text_bar_visibility()
+
+func _update_text_bar_visibility() -> void:
+	if text_bar == null:
+		return
+	var has_dialogue: bool = dialogues_label != null and dialogues_label.visible and dialogues_label.text.strip_edges() != ""
+	var has_finish_hint: bool = finish_hint_label != null and finish_hint_label.visible
+	text_bar.visible = has_dialogue or has_finish_hint

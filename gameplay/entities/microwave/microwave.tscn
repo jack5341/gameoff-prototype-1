@@ -1,11 +1,13 @@
-[gd_scene load_steps=19 format=3 uid="uid://cw8mjn832rl2y"]
+[gd_scene load_steps=21 format=3 uid="uid://cw8mjn832rl2y"]
 
 [ext_resource type="Script" uid="uid://ci2vahfklqkjo" path="res://gameplay/entities/microwave/microwave.gd" id="1_pc5h4"]
 [ext_resource type="Texture2D" uid="uid://dti6qqmj1vp6j" path="res://addons/kenney_prototype-textures/PNG/Dark/texture_04.png" id="2_glk8q"]
 [ext_resource type="Texture2D" uid="uid://v125ky6htoku" path="res://addons/kenney_prototype-textures/PNG/Dark/texture_01.png" id="2_xxcka"]
 [ext_resource type="PackedScene" uid="uid://b3ingre68ts7r" path="res://ui/screens/hud.tscn" id="4_2katx"]
-[ext_resource type="FontFile" uid="uid://dprhoem533dxi" path="res://assets/typography/Jersey15-Regular.ttf" id="5_f5i3f"]
+[ext_resource type="PackedScene" uid="uid://bsh1srex64x0l" path="res://assets/models/effects/burn.tscn" id="4_g00tf"]
+[ext_resource type="PackedScene" uid="uid://efrsxylstakv" path="res://assets/models/effects/cold.tscn" id="5_2rnsc"]
 [ext_resource type="Texture2D" uid="uid://cuylda24lvm6p" path="res://addons/kenney_prototype-textures/PNG/Light/texture_11.png" id="5_lxap8"]
+[ext_resource type="PackedScene" uid="uid://gmpsr4nf4ygn" path="res://assets/models/effects/steam.tscn" id="6_c3tsi"]
 [ext_resource type="Shader" uid="uid://v8xvw5dpdnc2" path="res://shaders/psx.gdshader" id="6_psx"]
 [ext_resource type="Script" uid="uid://hnur5de18oil" path="res://gameplay/entities/microwave/dialogues.gd" id="8_7lbod"]
 [ext_resource type="Script" uid="uid://dft8dcppt2vv8" path="res://gameplay/entities/microwave/cooking.gd" id="9_vtfc8"]
@@ -77,6 +79,18 @@ material = SubResource("StandardMaterial3D_xxcka")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Plate"]
 transform = Transform3D(0.05, 0, 0, 0, 0.05, 0, 0, 0, 0.05, 0, 0.012728184, 0)
 
+[node name="Burn" parent="Plate" instance=ExtResource("4_g00tf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05032774, 0)
+visible = false
+
+[node name="Cold" parent="Plate" instance=ExtResource("5_2rnsc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05032774, 0)
+visible = false
+
+[node name="Steam" parent="Plate" instance=ExtResource("6_c3tsi")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05032774, 0)
+visible = false
+
 [node name="Light" type="SpotLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0.15453815, 0)
 light_specular = 0.0
@@ -85,33 +99,6 @@ light_specular = 0.0
 layer = 101
 
 [node name="Hud" parent="HudLayer" instance=ExtResource("4_2katx")]
-
-[node name="ChatBubble" type="Control" parent="HudLayer"]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="CenterContainer" type="CenterContainer" parent="HudLayer/ChatBubble"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="MarginContainer" type="MarginContainer" parent="HudLayer/ChatBubble/CenterContainer"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_constants/margin_top = 300
-
-[node name="Label" type="Label" parent="HudLayer/ChatBubble/CenterContainer/MarginContainer"]
-layout_mode = 2
-theme_override_fonts/font = ExtResource("5_f5i3f")
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, -0.5163981)
@@ -164,12 +151,15 @@ microwave = NodePath("..")
 script = ExtResource("9_vtfc8")
 microwave = NodePath("..")
 
-[node name="Visual" type="Node" parent="." node_paths=PackedStringArray("microwave", "_plate", "_light", "_in_plate_raw_food")]
+[node name="Visual" type="Node" parent="." node_paths=PackedStringArray("microwave", "_plate", "_light", "_in_plate_raw_food", "_effect_burn", "_effect_cold", "_effect_steam")]
 script = ExtResource("10_g00tf")
 microwave = NodePath("..")
 _plate = NodePath("../Plate")
 _light = NodePath("../Light")
 _in_plate_raw_food = NodePath("../Plate/MeshInstance3D")
+_effect_burn = NodePath("../Plate/Burn")
+_effect_cold = NodePath("../Plate/Cold")
+_effect_steam = NodePath("../Plate/Steam")
 
 [node name="GuideMap" type="MeshInstance3D" parent="."]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0.2536441, 0, -0.23384532)

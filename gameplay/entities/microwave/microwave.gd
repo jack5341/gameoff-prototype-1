@@ -38,10 +38,10 @@ func _ready() -> void:
 	AudioManager.play_music_from_path("res://assets/audio/music/lofi.mp3")
 	await get_tree().process_frame
 	AudioManager.set_bus_volume_db(AudioManager.music_bus_name, -30)
+	Signalbus.guide_mode_changed.connect(_on_guide_mode_changed)
 
 func _process(delta: float) -> void:
 	_handle_session_timer(delta)
-	_handle_guide_view()
 
 func get_current_zone() -> int:
 	if cooking != null and "current_zone" in cooking:
@@ -133,3 +133,9 @@ func _set_camera_rotation_t(t: float) -> void:
 	var ry: float = lerp_angle(_cam_start_rot.y, _cam_target_rot.y, t)
 	var rz: float = lerp_angle(_cam_start_rot.z, _cam_target_rot.z, t)
 	camera.rotation = Vector3(rx, ry, rz)
+
+func _on_guide_mode_changed(active: bool) -> void:
+	if active:
+		_activate_guide_view()
+	else:
+		_deactivate_guide_view()

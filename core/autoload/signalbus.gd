@@ -29,3 +29,6 @@ signal combo_changed(streak: int, multiplier: int)
 
 @warning_ignore("UNUSED_SIGNAL")
 signal food_talked(string: String)
+
+@warning_ignore("UNUSED_SIGNAL")
+signal guide_mode_changed(active: bool)

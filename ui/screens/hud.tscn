@@ -148,6 +148,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="Guide" type="CenterContainer" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -227,6 +228,7 @@ label_2_text = "RPM: 100"
 label_3_text = "Temperature: 105"
 
 [node name="TextBar" type="Panel" parent="."]
+visible = false
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 1
 anchors_preset = 12
@@ -237,6 +239,7 @@ grow_horizontal = 2
 grow_vertical = 0
 
 [node name="FinishHint" type="Label" parent="TextBar"]
+visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -255,6 +258,7 @@ label_settings = SubResource("LabelSettings_l1baa")
 horizontal_alignment = 1
 
 [node name="Dialogues" type="Label" parent="TextBar"]
+visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5

@@ -7,11 +7,15 @@ var plate_rpm: float = 90.0
 @export var _plate: CSGCylinder3D = null
 @export var _light: SpotLight3D = null
 @export var _in_plate_raw_food: MeshInstance3D = null
+@export var _effect_burn: Node3D = null
+@export var _effect_cold: Node3D = null
+@export var _effect_steam: Node3D = null
 
 func _ready() -> void:
 	Signalbus.change_rpm_microwave.connect(_on_change_rpm_microwave)
 	if _in_plate_raw_food == null:
 		_in_plate_raw_food = microwave.get_node_or_null("Plate/MeshInstance3D") as MeshInstance3D
+	_hide_all_effects()
 	set_process(true)
 
 func _on_change_rpm_microwave(rpm: float) -> void:
@@ -44,6 +48,7 @@ func _handle_light(_delta: float) -> void:
 func show_raw_food(raw: RawFood) -> void:
 	if _in_plate_raw_food == null or raw == null:
 		return
+	_hide_all_effects()
 	_in_plate_raw_food.mesh = raw.mesh
 	_in_plate_raw_food.scale = raw.mesh_scale
 	_in_plate_raw_food.position = raw.mesh_position
@@ -56,6 +61,7 @@ func apply_finish_visual(raw_intensity: float, burn_intensity: float, cooked: Fo
 	var threshold: float = 0.01
 	var apply_burn: bool = (not force_blue) and burn_intensity > raw_intensity and burn_intensity > threshold
 	var apply_raw: bool = force_blue or (raw_intensity >= burn_intensity and raw_intensity > threshold)
+	_update_finish_effects(apply_raw, apply_burn)
 	if not apply_burn and not apply_raw:
 		# Still ensure we show the cooked mesh transform
 		_in_plate_raw_food.mesh = cooked.mesh
@@ -92,3 +98,30 @@ func apply_finish_visual(raw_intensity: float, burn_intensity: float, cooked: Fo
 		_in_plate_raw_food.material_override = override_mat
 	elif apply_burn:
 		_in_plate_raw_food.material_override = null
+	# Effects already updated above
+
+func _hide_all_effects() -> void:
+	_set_effect_visibility(_effect_burn, false)
+	_set_effect_visibility(_effect_cold, false)
+	_set_effect_visibility(_effect_steam, false)
+
+func _update_finish_effects(apply_raw: bool, apply_burn: bool) -> void:
+	var show_burn: bool = apply_burn
+	var show_cold: bool = (not apply_burn) and apply_raw
+	var show_steam: bool = (not apply_burn) and (not apply_raw)
+	_set_effect_visibility(_effect_burn, show_burn)
+	_set_effect_visibility(_effect_cold, show_cold)
+	_set_effect_visibility(_effect_steam, show_steam)
+
+func _set_effect_visibility(node: Node3D, visible: bool) -> void:
+	if node == null:
+		return
+	node.visible = visible
+	# Also toggle particles emitting within the effect subtree for reliability
+	for child in node.get_children():
+		if child is GPUParticles3D:
+			child.emitting = visible
+		elif child is Node:
+			for sub in child.get_children():
+				if sub is GPUParticles3D:
+					sub.emitting = visible
