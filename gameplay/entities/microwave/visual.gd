@@ -13,13 +13,11 @@ var plate_rpm: float = 90.0
 
 func _ready() -> void:
 	Signalbus.microwave_settings_changed.connect(_on_microwave_settings_changed)
-	if _in_plate_raw_food == null:
-		_in_plate_raw_food = microwave.get_node_or_null("Plate/MeshInstance3D") as MeshInstance3D
 	_hide_all_effects()
 	set_process(true)
 
-func _on_microwave_settings_changed(rpm: float, wattage: int) -> void:
-	plate_rpm = rpm
+func _on_microwave_settings_changed(_rpm: float) -> void:
+	plate_rpm = _rpm
 
 func _process(delta: float) -> void:
 	_handle_rotate_plate(delta)
@@ -71,41 +69,37 @@ func apply_finish_visual(raw_intensity: float, burn_intensity: float, cooked: Fo
 		_in_plate_raw_food.material_override = null
 		return
 	
+	# If food is burned, use raw_food mesh and darken it
+	if apply_burn and raw_food != null and raw_food.mesh != null:
+		_in_plate_raw_food.scale = raw_food.mesh_scale
+		_in_plate_raw_food.position = raw_food.mesh_position
+		var src_mesh: ArrayMesh = raw_food.mesh
+		var dupe_mesh: ArrayMesh = src_mesh.duplicate()
+		if dupe_mesh == null:
+			return
+		var surface_count: int = dupe_mesh.get_surface_count()
+		for i in range(surface_count):
+			var base_mat: Material = dupe_mesh.surface_get_material(i)
+			var new_mat: StandardMaterial3D = null
+			if base_mat != null and base_mat is StandardMaterial3D:
+				new_mat = base_mat.duplicate()
+			else:
+				new_mat = StandardMaterial3D.new()
+			var original_color: Color = new_mat.albedo_color if new_mat.albedo_color != Color.WHITE else Color(0.8, 0.8, 0.8, 1.0)
+			var black_color: Color = Color(0.0, 0.0, 0.0, 1.0)
+			new_mat.albedo_color = original_color.lerp(black_color, burn_intensity)
+			dupe_mesh.surface_set_material(i, new_mat)
+		_in_plate_raw_food.mesh = dupe_mesh
+		_in_plate_raw_food.material_override = null
+		return
+	
+	# Perfect cooked - use cooked mesh
 	if not apply_burn and not apply_raw:
 		_in_plate_raw_food.mesh = cooked.mesh
 		_in_plate_raw_food.scale = cooked.mesh_scale
 		_in_plate_raw_food.position = cooked.mesh_position + Vector3(0.0, 0.01, 0.0)
-		return
-	_in_plate_raw_food.scale = cooked.mesh_scale
-	_in_plate_raw_food.position = cooked.mesh_position + Vector3(0.0, 0.01, 0.0)
-	var src_mesh: ArrayMesh = cooked.mesh
-	var dupe_mesh: ArrayMesh = src_mesh.duplicate()
-	if dupe_mesh == null:
-		return
-	var surface_count: int = dupe_mesh.get_surface_count()
-	var blue_tint: Color = Color(0.3, 0.55, 1.0, 1.0)
-	var blue_strength: float = (max(raw_intensity, 0.6) if force_blue else raw_intensity)
-	for i in range(surface_count):
-		var base_mat: Material = dupe_mesh.surface_get_material(i)
-		var new_mat: StandardMaterial3D = null
-		if base_mat != null and base_mat is StandardMaterial3D:
-			new_mat = base_mat.duplicate()
-		else:
-			new_mat = StandardMaterial3D.new()
-		if apply_burn:
-			var original_color: Color = new_mat.albedo_color if new_mat.albedo_color != Color.WHITE else Color(0.8, 0.8, 0.8, 1.0)
-			var black_color: Color = Color(0.0, 0.0, 0.0, 1.0)
-			new_mat.albedo_color = original_color.lerp(black_color, burn_intensity)
-		elif apply_raw:
-			new_mat.albedo_color = Color(1, 1, 1, 1.0).lerp(blue_tint, blue_strength)
-		dupe_mesh.surface_set_material(i, new_mat)
-	_in_plate_raw_food.mesh = dupe_mesh
-	if apply_raw:
-		var override_mat: StandardMaterial3D = StandardMaterial3D.new()
-		override_mat.albedo_color = Color(1, 1, 1, 1.0).lerp(blue_tint, blue_strength)
-		_in_plate_raw_food.material_override = override_mat
-	elif apply_burn:
 		_in_plate_raw_food.material_override = null
+		return
 	# Effects already updated above
 
 func _hide_all_effects() -> void:
