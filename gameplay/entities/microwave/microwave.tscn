@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://cw8mjn832rl2y"]
+[gd_scene load_steps=36 format=3 uid="uid://cw8mjn832rl2y"]
 
 [ext_resource type="Script" uid="uid://ci2vahfklqkjo" path="res://gameplay/entities/microwave/microwave.gd" id="1_pc5h4"]
 [ext_resource type="Texture2D" uid="uid://dti6qqmj1vp6j" path="res://addons/kenney_prototype-textures/PNG/Dark/texture_04.png" id="2_glk8q"]
@@ -24,6 +24,10 @@
 [ext_resource type="ArrayMesh" uid="uid://c5bhj2uqnxtcy" path="res://assets/models/decorations/fireplace.res" id="23_2spit"]
 [ext_resource type="Texture2D" uid="uid://mu45yg0qhegu" path="res://assets/graphics/sprites/this_is_fine.jpg" id="23_y70s2"]
 [ext_resource type="ArrayMesh" uid="uid://c70jkqmm3g18b" path="res://assets/models/decorations/rug2.res" id="24_2spit"]
+[ext_resource type="ArrayMesh" uid="uid://ic6pco7xu5qp" path="res://assets/models/decorations/bear_head_mount.res" id="25_kx577"]
+[ext_resource type="ArrayMesh" uid="uid://ls58lhbmk7x7" path="res://assets/models/decorations/wine.res" id="26_ohkdt"]
+[ext_resource type="ArrayMesh" uid="uid://bepfdhi4jnpug" path="res://assets/models/decorations/glass.res" id="27_6hih6"]
+[ext_resource type="ArrayMesh" uid="uid://cy6ycenmjrn4l" path="res://assets/models/decorations/hamburger.res" id="28_2rtb1"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lxap8"]
 albedo_texture = ExtResource("2_xxcka")
@@ -116,7 +120,7 @@ fov = 43.3
 near = 0.035
 
 [node name="ReflectionProbe" type="ReflectionProbe" parent="Camera3D"]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -4.5144954e-08, 0, -0.5163981)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.16501774, -0.1323241, -0.6701775)
 
 [node name="Door" type="Node3D" parent="."]
 
@@ -179,7 +183,7 @@ mesh = SubResource("QuadMesh_7lbod")
 [node name="Decorations" type="Node3D" parent="."]
 
 [node name="Rug" type="MeshInstance3D" parent="Decorations"]
-transform = Transform3D(-4.305976e-12, 9.343965e-08, -0.99999994, 0.017186588, -2.1131663, -4.4211987e-08, -1.4919213, -0.024343165, -5.0640564e-10, 0.24691331, -0.007727351, 0.07738507)
+transform = Transform3D(-4.305976e-12, 9.343965e-08, -0.99999994, 0.017186588, -2.1131663, -4.4211987e-08, -1.4919213, -0.024343165, -5.0640564e-10, 0.24691331, 0.02509388, 0.05517572)
 mesh = ExtResource("13_2rnsc")
 
 [node name="Couch" type="MeshInstance3D" parent="Decorations"]
@@ -228,3 +232,27 @@ light_specular = 1.326
 [node name="Rug2" type="MeshInstance3D" parent="Decorations"]
 transform = Transform3D(5, 0, 0, 0, -2.1855695e-07, 5, 0, -5, -2.1855695e-07, 0.16251498, -0.15992725, 0.1604621)
 mesh = ExtResource("24_2spit")
+
+[node name="BearHeadMount" type="MeshInstance3D" parent="Decorations"]
+transform = Transform3D(-8.742278e-09, 0, 0.2, 0, 0.2, 0, -0.2, 0, -8.742278e-09, 0.19668321, -0.01590962, 0.021054648)
+mesh = ExtResource("25_kx577")
+
+[node name="Wine1" type="MeshInstance3D" parent="Decorations"]
+transform = Transform3D(0.01, 0, 0, 0, 0.01, 0, 0, 0, 0.01, 0.23445463, -0.1456567, 0.09997554)
+mesh = ExtResource("26_ohkdt")
+
+[node name="Wine2" type="MeshInstance3D" parent="Decorations"]
+transform = Transform3D(0.01, 0, 0, 0, 0.01, 0, 0, 0, 0.01, 0.22837535, -0.07017031, 0.17334822)
+mesh = ExtResource("26_ohkdt")
+
+[node name="Wine3" type="MeshInstance3D" parent="Decorations"]
+transform = Transform3D(0.01, 0, 0, 0, 0.01, 0, 0, 0, 0.01, 0.23789361, -0.07017031, 0.18836)
+mesh = ExtResource("26_ohkdt")
+
+[node name="Glass" type="MeshInstance3D" parent="Decorations"]
+transform = Transform3D(0.05, 0, 0, 0, 0.05, 0, 0, 0, 0.05, 0.22509322, -0.072007686, 0.12111373)
+mesh = ExtResource("27_6hih6")
+
+[node name="Hamburger" type="MeshInstance3D" parent="Decorations"]
+transform = Transform3D(100, 0, 0, 0, 100, 0, 0, 0, 100, 0.21665359, -0.17098776, -0.139939)
+mesh = ExtResource("28_2rtb1")
