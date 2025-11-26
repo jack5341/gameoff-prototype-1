@@ -1,14 +1,14 @@
-extends VBoxContainer
+extends PanelContainer
 
 @export_category("Shop Item")
 @export var decoration_name: String = ""
 @export var price: int = 0
 @export var description: String = ""
 
-@onready var name_label: Label = $Name
-@onready var price_label: Label = $Price
-@onready var description_label: Label = $Description
-@onready var buy_button: Button = $BuyButton
+@onready var name_label: Label = $MarginContainer/VBoxContainer/Name
+@onready var price_label: Label = $MarginContainer/VBoxContainer/HBoxContainer/Price
+@onready var description_label: Label = $MarginContainer/VBoxContainer/Description
+@onready var buy_button: Button = $MarginContainer/VBoxContainer/HBoxContainer/BuyButton
 
 var is_purchased: bool = false
 var _on_buy_callback: Callable
